@@ -59,5 +59,4 @@ public class BJ_10845_큐 {
 			}
 		}
 	}
-
 }
