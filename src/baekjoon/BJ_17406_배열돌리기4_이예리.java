@@ -104,7 +104,7 @@ public class BJ_17406_배열돌리기4_이예리 {
             return;
         } else {
             for (int i = 1; i <= K; i++) {
-                if (isSelected[i - 1] == true) {	//배열에 이미 들어가있으면 종료
+                if (isSelected[i - 1]) {	//배열에 이미 들어가있으면 종료
                     continue;
                 }
                 numbers[cnt] = i;
