@@ -1,41 +1,20 @@
 package baekjoon;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        boolean[] prime = new boolean[1000001];
+    public static void main(String[] args) throws IOException, IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        for (int i = 3; i <= Math.sqrt(1000000); i++){
-            if(prime[i]){
-                continue;
-            }
-            for(int j = i * i; j < prime.length; j += i){
-                prime[j] = true;
-            }
-        }
-
-        int n = sc.nextInt();
-        do{
-            int a = 0;
-            for(int i = 3; i <= n/2; i+=2){
-                if (!prime[i] && !prime[n-i]){
-                    a = i;
-                    break;
-                }
-            }
-
-            if(a != 0){
-                System.out.println(n + " = " + a + " + " + (n-a));
-            }else{
-                System.out.println("Goldbach's conjecture is wrong.");
-            }
-
-            n = sc.nextInt();
-
-        }while (n!=0);
-
-
+        long a = Long.parseLong(st.nextToken());
+        long b = Long.parseLong(st.nextToken());
+        long c = Long.parseLong(st.nextToken());
+        System.out.println(a+b+c);
+//        System.out.println(n%m);
     }
 }
