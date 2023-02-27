@@ -46,7 +46,9 @@ public class BJ_15685_드래곤커브 {
                 stack = (Stack<Integer>) newStack.clone();
 
             }
-        }
+        }//끝
+
+        //출력
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 100; j++) {
                 if(map[i][j]==1){
