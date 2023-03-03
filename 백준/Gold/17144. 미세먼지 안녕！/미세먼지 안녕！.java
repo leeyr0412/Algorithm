@@ -25,7 +25,6 @@ public class Main {
 				if (map[r][c] == 0) {
 					continue;
 				} else if (map[r][c] > 0) { // 미세먼지 있는곳
-//					que.add(new int[] { r, c });
 				} else { // 청정기
 					machine = r;
 				}
@@ -33,8 +32,6 @@ public class Main {
 		}
 		machine--; // 청정기 좌표 윗칸
 		
-//		printMap(R,C);
-
 		for (int t = 0; t < T; t++) {
 			// 미세먼지 확산
 			// 먼지 찾기
@@ -65,8 +62,6 @@ public class Main {
 				map[r] = newMap[r].clone();
 			}
 			
-//			printMap(R,C);
-
 			// 공기청정기 작동
 			Deque<Integer> que = new ArrayDeque<>(); // 미세먼지 넣을 거임
 			for (int r = machine - 1; r >= 0; r--) { // 위 사이클
@@ -96,7 +91,6 @@ public class Main {
 				map[machine][c] = que.poll();
 			}
 			
-			
 			// 아래 사이클
 			for (int r = machine + 2; r < R; r++) { 
 				que.add(map[r][0]);
@@ -124,8 +118,6 @@ public class Main {
 			for (int c = C-2; c > 0; c--) {
 				map[machine+1][c] = que.poll();
 			}
-			
-//			printMap(R,C);
 		}
 
 		int answer = 0;
@@ -138,16 +130,4 @@ public class Main {
 		}
 		System.out.println(answer);
 	}
-
-//	private static void printMap(int R, int C) {
-//		for (int r = 0; r < R; r++) {
-//			for (int c = 0; c < C; c++) {
-//				System.out.printf("%2d ",map[r][c]);
-//			}
-//			System.out.println();
-//		}
-//		System.out.println("===========================");
-//	}
-
-	
 }
