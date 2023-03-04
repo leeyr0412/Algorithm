@@ -2,10 +2,8 @@ import java.io.*;
 import java.util.StringTokenizer;
 
 public class Main {
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
@@ -27,16 +25,10 @@ public class Main {
             int temp = Integer.parseInt(st.nextToken());
             if(temp <0){
                 sb.append(minus[-temp]).append(" ");
-//                bw.write(minus[-temp] + " ");
             }else {
                 sb.append(plus[temp]).append(" ");
-//                bw.write(plus[temp] + " ");
             }
         }
-
         System.out.println(sb);
-//        bw.flush();
-//        bw.close();
     }
-
 }
