@@ -28,36 +28,34 @@ public class Main {
             }
         }
         int ansTall = 0;
-        for(int i = 0; i <= 256;i++){
+        for (int i = 0; i <= 256; i++) {
             int temp = search(i);
-            if(temp < 0) {
+            if (temp < 0) {
                 continue;
             }
             time = temp;
-//            if (temp == time) {
-                ansTall = i;
-//            }
+            ansTall = i;
         }
-        System.out.println(time + " "+ansTall);
+        System.out.println(time + " " + ansTall);
     }
 
     private static int search(int i) {
-        int tempTime=0;
+        int tempTime = 0;
         int tempBlock = block;
         for (int r = 0; r < R; r++) {
             for (int c = 0; c < C; c++) {
-                if(map[r][c] < i){
-                    tempBlock = tempBlock - (i-map[r][c]);
-                    tempTime+=i-map[r][c];
-                }else{
-                    tempBlock+=map[r][c]-i;
-                    tempTime+=(map[r][c]-i)*2;
+                if (map[r][c] < i) {
+                    tempBlock = tempBlock - (i - map[r][c]);
+                    tempTime += i - map[r][c];
+                } else {
+                    tempBlock += map[r][c] - i;
+                    tempTime += (map[r][c] - i) * 2;
                 }
-                if(tempTime > time)
+                if (tempTime > time)
                     return -1;
             }
         }
-        if(tempBlock<0){
+        if (tempBlock < 0) {
             return tempBlock;
         }
         return tempTime;
