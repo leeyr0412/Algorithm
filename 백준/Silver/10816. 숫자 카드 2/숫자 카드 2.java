@@ -5,7 +5,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+//        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
         int[] plus = new int [10000001];
@@ -25,14 +26,17 @@ public class Main {
         for(int n = 0; n < N; n++){
             int temp = Integer.parseInt(st.nextToken());
             if(temp <0){
-                bw.write(minus[-temp] + " ");
+                sb.append(minus[-temp]).append(" ");
+//                bw.write(minus[-temp] + " ");
             }else {
-                bw.write(plus[temp] + " ");
+                sb.append(plus[temp]).append(" ");
+//                bw.write(plus[temp] + " ");
             }
         }
 
-        bw.flush();
-        bw.close();
+        System.out.println(sb);
+//        bw.flush();
+//        bw.close();
     }
 
 }
