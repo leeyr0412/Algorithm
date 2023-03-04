@@ -1,9 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.StringTokenizer;
 
 public class Main {
     static long M = 1234567891;
@@ -18,10 +15,8 @@ public class Main {
         for(int i =0; i < L; i++){
             int c = line.charAt(i)-'a'+1;
             answer+=c*rModulo(i);
-//            answer = answer
             if(answer > M)
                 answer=answer%M;
-//            rModulo(i);
         }
         System.out.println(answer%M);
     }
@@ -33,7 +28,6 @@ public class Main {
             return R;
         }
         int mid = i/2;
-//        return R%M;
         return (rModulo(mid)*rModulo(i-mid))%M;
     }
 }
