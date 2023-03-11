@@ -51,5 +51,4 @@ public class BJ_12891_DNA비밀번호_이예리 {
 		}
 		System.out.println(result);
 	}
-
 }
