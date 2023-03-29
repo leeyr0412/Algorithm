@@ -3,11 +3,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
 /**
- * 파이프옮기기1_이예리 / 골드5 / 걸린시간 / 3월 29일
+ * 파이프옮기기1_이예리 / 골드5 / 30분 / 3월 29일
  */
 class Point {
     private int r;
