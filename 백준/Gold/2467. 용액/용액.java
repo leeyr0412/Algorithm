@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 /**
- * 용액 / 골드5 / 걸린시간 / 3월 31일
+ * 용액 / 골드5 / 10분 / 3월 31일
  */
 public class Main {
     public static void main(String[] args) throws IOException {
