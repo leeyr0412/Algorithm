@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 /**
- * 보석 도둑 / 골드2 / 걸린시간 / 4월 3일
+ * 보석 도둑 / 골드2 / 1시간 30분 / 4월 3일
  */
 class Gem implements Comparable<Gem> {
     private int m;
@@ -40,7 +40,6 @@ public class Main {
 
         int N = Integer.parseInt(st.nextToken());   //보석 수
         int bagNum = Integer.parseInt(st.nextToken());   //가방 수
-        boolean[] use = new boolean[N];
 
         PriorityQueue<Gem> gems = new PriorityQueue<>();
         for (int i = 0; i < N; i++) {
@@ -49,7 +48,6 @@ public class Main {
             int v = Integer.parseInt(st.nextToken());
             gems.offer(new Gem(m, v));
         }
-//        Collections.sort(gems);
         int[] bags = new int[bagNum];
         for (int i = 0; i < bagNum; i++) {
             bags[i] = Integer.parseInt(br.readLine());
@@ -67,51 +65,5 @@ public class Main {
             }
         }
         System.out.println(answer);
-
-
-
-
-
-
-
-
-
-
-
-//        for (int i = 0; i < bagNum; i++) {
-//            int tempCost = 0;
-////            int index = -1;
-//            for (int j = 0; j < gems.size(); j++) {
-//                if(use[j])
-//                    continue;
-//                if (bags[i] < gems.get(j).getM()) {
-//                    break;
-//                } else {
-//                    if(tempCost <= gems.get(j).getCost()){
-//                        tempCost = gems.get(j).getCost();
-////                        index = j;
-//                        use[j] = true;
-//                    }
-//                }
-//            }
-////            if(index <0){
-////                continue;
-////            }
-////            gems.remove(index);
-//            answer += tempCost;
-//        }
-//        System.out.println(answer);
     }
 }
-
-/*
-4 4
-1 100
-2 200
-13 300
-10 500
-10
-10
-10
-14
- */
