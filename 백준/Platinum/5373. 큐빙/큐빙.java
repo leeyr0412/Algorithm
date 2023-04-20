@@ -84,43 +84,6 @@ public class Main {
                         turn(cube, 5);
                         break;
                 }
-//                for (int r = 0; r < 3; r++) {
-//                    for (int c = 0; c < 3; c++) {
-//                        System.out.print(cube[0][r][c]);
-//                    }
-//                    System.out.println();
-//                }System.out.println();
-//                for (int r = 0; r < 3; r++) {
-//                    for (int c = 0; c < 3; c++) {
-//                        System.out.print(cube[1][r][c]);
-//                    }
-//                    System.out.println();
-//                }System.out.println();
-//                for (int r = 0; r < 3; r++) {
-//                    for (int c = 0; c < 3; c++) {
-//                        System.out.print(cube[2][r][c]);
-//                    }
-//                    System.out.println();
-//                }System.out.println();
-//                for (int r = 0; r < 3; r++) {
-//                    for (int c = 0; c < 3; c++) {
-//                        System.out.print(cube[3][r][c]);
-//                    }
-//                    System.out.println();
-//                }System.out.println();
-//                for (int r = 0; r < 3; r++) {
-//                    for (int c = 0; c < 3; c++) {
-//                        System.out.print(cube[4][r][c]);
-//                    }
-//                    System.out.println();
-//                }
-//                System.out.println();
-//                for (int r = 0; r < 3; r++) {
-//                    for (int c = 0; c < 3; c++) {
-//                        System.out.print(cube[5][r][c]);
-//                    }
-//                    System.out.println();
-//                }System.out.println();System.out.println();System.out.println();
             }
             for (int r = 0; r < 3; r++) {
                 for (int c = 0; c < 3; c++) {
@@ -201,8 +164,3 @@ public class Main {
         }
     }
 }
-/*
-1
-1
-F+ R+ U+ B+ L+ D+
- */
