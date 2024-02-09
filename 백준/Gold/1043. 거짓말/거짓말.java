@@ -8,9 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-/**
- * 거짓말 / 골드4 / 1시간 / 3월 3일
- */
 public class Main {
 
 	static ArrayList<Set<Integer>> link = new ArrayList<>();
