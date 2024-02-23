@@ -3,9 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-/**
- * 활주로건설 / 모의 / 1시간 / 4월 5일
- */
 public class Solution {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
