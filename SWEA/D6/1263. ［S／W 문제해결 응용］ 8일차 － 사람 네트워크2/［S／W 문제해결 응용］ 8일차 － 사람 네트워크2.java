@@ -4,9 +4,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-/**
- * 사람네트워크2 / D6 / 걸린시간 / 4월 3일
- */
 public class Solution {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -53,8 +50,6 @@ public class Solution {
                 }
                 answer=Math.min(temp, answer);
             }
-
-
             sb.append("#").append(tc).append(" ").append(answer).append("\n");
         }
         System.out.println(sb);
