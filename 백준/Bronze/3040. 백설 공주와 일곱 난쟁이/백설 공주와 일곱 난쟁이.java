@@ -11,7 +11,6 @@ public class Main {
             arr[i]= Integer.parseInt(br.readLine());
             total += arr[i];
         }
-//        Collections.sort(arr);
         for(int i = 0; i <8; i++){
             for(int j = i+1; j<9; j++){
                 int temp = arr[i] + arr[j];
