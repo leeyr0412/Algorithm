@@ -6,8 +6,7 @@ import java.util.StringTokenizer;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        //StringBuilder sb = new StringBuilder();
-        StringTokenizer st;// = new StringTokenizer(br.readLine());
+        StringTokenizer st;
 
         int N = Integer.parseInt(br.readLine());
         int[] nums = new int[N];
@@ -30,12 +29,10 @@ public class Main {
             }
         }
         System.out.println(top+1);
-
     }
 
-    private static int binarySearch(int[] list, int key, int top) {
+    private static int binarySearch(int[] list, int key, int end) {
         int start = 0;
-        int end = top;
         int mid = 0;
         while (start <= end) {
             mid = (start + end) >> 1;
