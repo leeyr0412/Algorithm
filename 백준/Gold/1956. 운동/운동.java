@@ -3,9 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-/**
- * 운동 / 골드4 / 걸린시간 / 3월 21일
- */
 public class Main {
     private static final int INF = (int) 1e9;
 
