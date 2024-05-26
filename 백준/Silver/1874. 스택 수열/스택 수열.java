@@ -31,8 +31,6 @@ public class Main {
             //팝
             top--;
             sb.append('-').append('\n');
-
-
         }
         System.out.println(sb);
     }
