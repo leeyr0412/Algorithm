@@ -3,9 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-/**
- * 달리기 / 플래티넘3 / 걸린시간 / 4월 7일
- */
 class Pos {
     private int r;
     private int c;
@@ -67,9 +64,7 @@ public class Main {
         Deque<Pos> q = new ArrayDeque<>();
         int[][] visited = new int[R + 1][C + 1];
         for(int r = 1; r<=R;r++) Arrays.fill(visited[r],Integer.MAX_VALUE);
-//        boolean[][] visited = new boolean[R + 1][C + 1];
         q.offer(new Pos(start[0], start[1], 0));
-//        visited[start[0]][start[1]] = true;
         visited[start[0]][start[1]] = 0;
         while (!q.isEmpty()) {
             Pos curr = q.poll();
@@ -88,10 +83,8 @@ public class Main {
                     if (nr > 0 && nc > 0 && nr <= R && nc <= C) {
                         if (map[nr][nc] == '#') break;
                         if(visited[nr][nc]<visited[currR][currC]+1) break;
-//                        if(visited[nr][nc]) continue;
                         if (map[nr][nc] == '.'&&visited[nr][nc]==Integer.MAX_VALUE) {
                             visited[nr][nc] = visited[currR][currC]+1;
-//                            visited[nr][nc] = true;
                             stack.add(new Pos(nr, nc, currTime + 1));
                         }
                     }else {
