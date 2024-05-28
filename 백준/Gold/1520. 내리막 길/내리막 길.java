@@ -10,7 +10,6 @@ public class Main {
     static int[][] map;
     static int[][] dp;
     static int[][] dr = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-    static int answer;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
