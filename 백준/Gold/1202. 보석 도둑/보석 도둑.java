@@ -3,9 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-/**
- * 보석 도둑 / 골드2 / 1시간 30분 / 4월 3일
- */
 class Gem implements Comparable<Gem> {
     private int m;
     private int cost;
