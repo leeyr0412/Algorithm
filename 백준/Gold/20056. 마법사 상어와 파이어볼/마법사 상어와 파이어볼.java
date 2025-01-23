@@ -1,177 +1,139 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.StringTokenizer;
+import java.util.*;
 
-/**
- * 마법사 상어와 파이어볼 / 난이도 / 30  / 3월 3일 https://www.acmicpc.net/problem/20056
- */
-class FireBall {
-    private int r, c, m, d, speed;
+class Fireball {
+    int r, c, m, d, s;
 
-    public FireBall(int r, int c, int m, int d, int speed) {
+    public Fireball(int r, int c, int m, int d, int s) {
         this.r = r;
         this.c = c;
         this.m = m;
         this.d = d;
-        this.speed = speed;
+        this.s = s;
     }
 
-    public int getR() {
-        return r;
+    public Fireball(Fireball fireball) {
+        this.r = fireball.r;
+        this.c = fireball.c;
+        this.m = fireball.m;
+        this.d = fireball.d;
+        this.s = fireball.s;
     }
 
-    public int getC() {
-        return c;
+    public void move(int N) {
+        int[][] dirs = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};
+        r = (r + dirs[d][0] * s) % N;
+        if (r < 0) {
+            r += N;
+        }
+        //if (dirs[d][0] < 0) {
+        //    r = (r + dirs[d][0] * s) % N + N;
+        //} else {
+        //    r = (r + dirs[d][0] * s) % N;
+        //}
+        c = (c + dirs[d][1] * s) % N;
+        if (c < 0) {
+            c += N;
+        }
+        //if (dirs[d][1] < 0) {
+        //    c = (c + dirs[d][1] * s) % N+ N;
+        //} else {
+        //    c = (c + dirs[d][1] * s) % N;
+        //}
     }
-
-    public int getM() {
-        return m;
-    }
-
-    public int getD() {
-        return d;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-}
-
-class Pos {
-    private int r, c;
-    private FireBall ball;
-
-    public Pos(int r, int c, FireBall ball) {
-        this.r = r;
-        this.c = c;
-        this.ball = ball;
-    }
-
-    public int getR() {
-        return r;
-    }
-
-    public int getC() {
-        return c;
-    }
-
-    public FireBall getBall() {
-        return ball;
-    }
-
 }
 
 public class Main {
-	static int[][] dr = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};
-    static int N;
-    static ArrayList<FireBall>[][] map;
-    static Deque<Pos> ballList = new ArrayDeque<>();
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        N = Integer.parseInt(st.nextToken());
-        map = new ArrayList[N + 1][N + 1];
-        for(int r = 1; r <N+1;r++){
-            for(int c = 1; c<N+1; c++){
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+
+        Queue<Fireball> fireballs = new ArrayDeque<>();
+        for (int i = 0; i < M; i++) {
+            initFireball(br, fireballs);
+        }
+        List<Fireball>[][] map = new List[N][N];
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < N; c++) {
                 map[r][c] = new ArrayList<>();
             }
         }
-        int ballNum = Integer.parseInt(st.nextToken());
-        int commandNum = Integer.parseInt(st.nextToken());
-        for (int i = 0; i < ballNum; i++) {
-            st = new StringTokenizer(br.readLine());
-            int r = Integer.parseInt(st.nextToken());
-            int c = Integer.parseInt(st.nextToken());
-            int m = Integer.parseInt(st.nextToken());
-            int speed = Integer.parseInt(st.nextToken());
-            int d = Integer.parseInt(st.nextToken());
-//            map[r][c].add(new FireBall(r, c, m, d, speed));
-            ballList.add(new Pos(r, c, new FireBall(r, c, m, d, speed)));
+
+        // K번 명령
+        for (int i = 0; i < K; i++) {
+            // 이동
+            while (!fireballs.isEmpty()) {
+                Fireball fireball = fireballs.poll();
+                fireball.move(N);
+                map[fireball.r][fireball.c].add(new Fireball(fireball));
+            }
+
+            // 합치기
+            for (int r = 0; r < N; r++) {
+                for (int c = 0; c < N; c++) {
+                    if (map[r][c].size() > 1) { // 파이어볼이 여러개.
+                        int m = 0;  // 질량
+                        int s = 0;  // 속도
+                        int evenCount = 0;  // 방향 정하기 위함
+                        int oddCount = 0;
+                        for (Fireball fireball : map[r][c]) {
+                            m += fireball.m;
+                            s += fireball.s;
+                            if (fireball.d % 2 == 0) {
+                                evenCount++;
+                            } else {
+                                oddCount++;
+                            }
+                        }
+                        m = m / 5;
+                        s = s / (evenCount + oddCount);
+                        if (m > 0) {   // 질량이 0이면 사라지므로 0이상일때만 나누기
+                            splitFireball(fireballs, map, r, c, m, s, evenCount, oddCount);
+                        }
+                    } else if (map[r][c].size() == 1) { // 칸에 파이어볼 1개
+                        fireballs.add(map[r][c].get(0));
+                    }
+                    map[r][c].clear();
+                }
+            }
         }
 
-        for (int command = 0; command < commandNum; command++) {
-            //이동
-            for (Pos pos : ballList) {
-                int d = pos.getBall().getD();
-//                        map[r][c].get(0).getD();
-                int speed = pos.getBall().getSpeed();
-//                int speed = map[r][c].get(0).getSpeed();
-                int newR = pos.getR() + dr[d][0] * speed;
-                if (newR == 0 || newR % N == 0) {
-                    newR = N;
-                } else if (newR < 0) {
-                    newR = newR % N + N;
-                } else {
-                    newR = newR % N;
-                }
-                int newC = pos.getC() + dr[d][1] * speed;
-                if (newC == 0 || newC % N == 0) {
-                    newC = N;
-                } else if (newC < 0) {
-                    newC = newC % N + N;
-                } else {
-                    newC = newC % N;
-                }
-
-                map[newR][newC].add(new FireBall(newR, newC, pos.getBall().getM(), d, speed));
-            }
-            ballList = new ArrayDeque<>();
-            //합치기
-            for (int r = 1; r <= N; r++) {
-                for (int c = 1; c <= N; c++) {
-                    if (map[r][c].size() > 1) {
-//                        int same = map[r][c].get(0).getD() % 2; //짝수면 0, 홀수면 1
-                        int even = 0;
-                        int odd = 0;
-                        int M = 0;
-                        int speed = 0;
-                        for (FireBall ball : map[r][c]) {
-                            M += ball.getM();
-                            speed += ball.getSpeed();
-                            int d = ball.getD() % 2;
-                            if(d ==0) {
-                            	even++;
-                            }else {
-                            	odd++;
-                            }
-                        }
-                        if (M / 5 > 0) {
-                            if (even*odd == 0) { //방향 같음
-                                ballList.add(new Pos(r, c, new FireBall(r, c, M / 5, 0, speed / map[r][c].size())));
-                                ballList.add(new Pos(r, c, new FireBall(r, c, M / 5, 2, speed / map[r][c].size())));
-                                ballList.add(new Pos(r, c, new FireBall(r, c, M / 5, 4, speed / map[r][c].size())));
-                                ballList.add(new Pos(r, c, new FireBall(r, c, M / 5, 6, speed / map[r][c].size())));
-                            } else {
-                                ballList.add(new Pos(r, c, new FireBall(r, c, M / 5, 1, speed / map[r][c].size())));
-                                ballList.add(new Pos(r, c, new FireBall(r, c, M / 5, 3, speed / map[r][c].size())));
-                                ballList.add(new Pos(r, c, new FireBall(r, c, M / 5, 5, speed / map[r][c].size())));
-                                ballList.add(new Pos(r, c, new FireBall(r, c, M / 5, 7, speed / map[r][c].size())));
-
-                            }
-                        } else {  //질량 0이면 사라짐
-                            map[r][c] = new ArrayList<>();
-                        }
-                        map[r][c] = new ArrayList<>();
-                    } else if (map[r][c].size() == 1) {
-                        ballList.add(new Pos(r, c, map[r][c].get(0)));
-                        map[r][c].remove(0);
-                    }
-                }
-            }
-        }       //명령 끝
-
+        //파이어볼 질량 합
         int answer = 0;
-        for (Pos pos : ballList) {
-            answer+= pos.getBall().getM();
+        for (Fireball fireball : fireballs) {
+            answer += fireball.m;
         }
         System.out.println(answer);
+    }
 
+    private static void splitFireball(Queue<Fireball> fireballs, List<Fireball>[][] map, int r, int c, int m, int s, int evenCount, int oddCount) {
+        if (evenCount * oddCount == 0) {// 합쳐지는 파이어볼 방향이 모두 홀수거나 짝수
+            fireballs.add(new Fireball(r, c, m, 0, s));
+            fireballs.add(new Fireball(r, c, m, 2, s));
+            fireballs.add(new Fireball(r, c, m, 4, s));
+            fireballs.add(new Fireball(r, c, m, 6, s));
+        } else {
+            fireballs.add(new Fireball(r, c, m, 1, s));
+            fireballs.add(new Fireball(r, c, m, 3, s));
+            fireballs.add(new Fireball(r, c, m, 5, s));
+            fireballs.add(new Fireball(r, c, m, 7, s));
+        }
+    }
 
+    private static void initFireball(BufferedReader br, Queue<Fireball> fireballs) throws IOException {
+        StringTokenizer st;
+        st = new StringTokenizer(br.readLine());
+        int r = Integer.parseInt(st.nextToken()) - 1;
+        int c = Integer.parseInt(st.nextToken()) - 1;
+        int m = Integer.parseInt(st.nextToken());
+        int s = Integer.parseInt(st.nextToken());
+        int d = Integer.parseInt(st.nextToken());
+        fireballs.add(new Fireball(r, c, m, d, s));
     }
 }
