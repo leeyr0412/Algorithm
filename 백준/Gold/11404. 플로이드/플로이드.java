@@ -1,55 +1,52 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
 
-/**
- * 플로이드 / 골드4 / 시간 / 4월 19일
- */
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;// = new StringTokenizer(br.readLine());
+        StringTokenizer st;
         StringBuilder sb = new StringBuilder();
 
-        int city = Integer.parseInt(br.readLine());
-        int busNum = Integer.parseInt(br.readLine());
+        int n = Integer.parseInt(br.readLine());
+        int m = Integer.parseInt(br.readLine());
+
         int INF = (int) 1e9;
-
-        int[][] costs = new int[city + 1][city + 1];
-        for (int i = 1; i <= city; i++) {
-            Arrays.fill(costs[i], INF);
+        int[][] weight = new int[n + 1][n + 1];
+        for (int r = 1; r <= n; r++) {
+            Arrays.fill(weight[r], INF);
+        }
+        for (int i = 1; i <= n; i++) {
+            weight[i][i] = 0;
         }
 
-        for (int i = 0; i < busNum; i++) {
+        for (int i = 0; i < m; i++) {
             st = new StringTokenizer(br.readLine());
-            int start = Integer.parseInt(st.nextToken());
-            int end = Integer.parseInt(st.nextToken());
+            int from = Integer.parseInt(st.nextToken());
+            int to = Integer.parseInt(st.nextToken());
             int cost = Integer.parseInt(st.nextToken());
-            costs[start][end] = Math.min(cost, costs[start][end]);
+            weight[from][to] = Math.min(weight[from][to], cost);
         }
 
-        for (int use = 1; use <= city; use++) {
-            for (int start = 1; start <= city; start++) {
-                for (int end = 1; end <= city; end++) {
-                    costs[start][end] = Math.min(costs[start][end], costs[start][use] + costs[use][end]);
+        for (int use = 1; use <= n; use++) {
+            for (int from = 1; from <= n; from++) {
+                for (int to = 1; to <= n; to++) {
+                    weight[from][to] = Math.min(weight[from][to], weight[from][use] + weight[use][to]);
                 }
             }
         }
 
-        for (int start = 1; start <= city; start++) {
-            for (int end = 1; end <= city; end++) {
-                if(start==end){
-                    costs[start][end]=0;
-                }
-                if (costs[start][end]>=INF){
-                    System.out.print(0+" ");
-                }else{
-                    System.out.print(costs[start][end]+" ");
+        for (int r = 1; r <= n; r++) {
+            for (int c = 1; c <= n; c++) {
+                if (weight[r][c] >= INF) {
+                    sb.append(0).append(" ");
+                } else {
+                    sb.append(weight[r][c]).append(" ");
                 }
             }
-            System.out.println();
+            sb.append("\n");
         }
+        System.out.println(sb);
     }
 }
