@@ -27,7 +27,6 @@ class Solution {
         visited.addAll(Arrays.asList(words));
         if (!visited.contains(target)) {
             return answer;
-            //return 0;
         }
         answer = bfs(begin, target);
         return answer;
@@ -35,7 +34,6 @@ class Solution {
 
     private int bfs(String begin, String target) {
         if (!visited.contains(target)) {
-            //return answer;
             return 0;
         }
         Deque<Node> q = new ArrayDeque<>();
