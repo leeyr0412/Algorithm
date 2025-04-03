@@ -1,6 +1,6 @@
 import java.util.*;
 
-class State implements Comparable<State> {
+class State {
     private int sheep;
     private int wolf;
     private List<Integer> nextNodes;
@@ -22,16 +22,6 @@ class State implements Comparable<State> {
     public List<Integer> getNextNodes() {
         return nextNodes;
     }
-
-    @Override
-    public int compareTo(State o) {
-        if (this.sheep != o.sheep) {
-            return o.sheep - this.sheep;
-        } else if (this.wolf != o.wolf) {
-            return this.wolf - o.wolf;
-        }
-        return 0;
-    }
 }
 
 class Solution {
@@ -45,7 +35,7 @@ class Solution {
         for (int[] edge : edges) {
             graph[edge[0]].add(edge[1]);
         }
-        
+
         Set<String> visited = new HashSet<>();
         Deque<State> que = new ArrayDeque<>();
         que.add(new State(1, 0, new ArrayList<>(graph[0])));
