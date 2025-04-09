@@ -3,106 +3,112 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-class Pos {
-    int r;
-    int c;
+class Node implements Comparable<Node> {
+    int r, c;
+    int count;
 
-    public Pos(int r, int c) {
+    public Node(int r, int c) {
         this.r = r;
         this.c = c;
+    }
+
+    public Node(int r, int c, int count) {
+        this.r = r;
+        this.c = c;
+        this.count = count;
+    }
+
+    @Override
+    public int compareTo(Node o) {
+        return this.count - o.count;
     }
 }
 
 public class Main {
-    static int[][] arr;
-    static int i_cnt = 0; // 섬 수
-    static int[][] dr = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
     static int N;
-    static int result ;
-//    static int result = Integer.MAX_VALUE;
+    static int[][] map;
+    static int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    static int answer = 10000;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
         N = Integer.parseInt(br.readLine());
-        arr = new int[N][N];
-        for (int y = 0; y < N; y++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            for (int x = 0; x < N; x++) {
-                arr[y][x] = Integer.parseInt(st.nextToken());
+        map = new int[N][N];
+        for (int r = 0; r < N; r++) {
+            st = new StringTokenizer(br.readLine());
+            for (int c = 0; c < N; c++) {
+                map[r][c] = Integer.parseInt(st.nextToken());
             }
         }
-        result = 2*N -1;
 
-        //섬 수 찾기
+        int islandCount = 0;
         for (int r = 0; r < N; r++) {
             for (int c = 0; c < N; c++) {
-                if (arr[r][c] == 1) {
-                    i_cnt++;
-                    findIsland(r, c);
+                if (map[r][c] > 0) {
+                    islandCount++;
+                    islandCheck(r, c, (-1) * islandCount);
                 }
             }
         }
 
-        //거리 찾기
+        boolean[] islandStartCheck = new boolean[islandCount + 1];
+        islandStartCheck[0] = true;
         for (int r = 0; r < N; r++) {
             for (int c = 0; c < N; c++) {
-                if (arr[r][c] < 0 ) {    //현재 위치가 섬
-                    int temp = bfs(r, c, arr[r][c]);
-                    if (temp <= 0) {
-                        continue;
-                    }
-                    result = Math.min(result, temp);
+                if (!islandStartCheck[-1 * map[r][c]]) {
+                    islandStartCheck[-1 * map[r][c]] = true;
+                    bfs(r, c, map[r][c]);
                 }
             }
         }
-
-        System.out.println(result);
+        System.out.println(answer);
     }
 
-    private static int bfs(int r, int c, int currIsland) {
-        Queue<Pos> que = new LinkedList<>();
-        que.offer(new Pos(r,c));
-        int [][]map = new int [N][N];
-        while(!que.isEmpty()){
-            Pos curr = que.poll();
-            for (int[] d : dr) {
-                if(map[curr.r][curr.c]>result)
-                    return -1;
-                int nr = curr.r + d[0];
-                int nc = curr.c + d[1];
-                if (nr < 0 || nr >= N || nc < 0 || nc >= N) {
-                    continue;
-                }
-                if(map[nr][nc]!=0)
-                    continue;
-                if (arr[nr][nc] == 0 ) {
-                    map[nr][nc] = map[curr.r][curr.c] + 1;
-                    que.offer(new Pos(nr, nc));
-                    continue;
-                }
-                if (arr[nr][nc] != currIsland) {
-                    return map[curr.r][curr.c];
-                }
-                if(map[nr][nc]>result)
-                    return -1;
+    private static void bfs(int r, int c, int startLand) {
+        boolean[][] visited = new boolean[N][N];
+        PriorityQueue<Node> que = new PriorityQueue<>();
+        que.add(new Node(r, c));
+        visited[r][c] = true;
+        while (!que.isEmpty()) {
+            Node now = que.poll();
+            if (now.count > answer) {
+                return;
             }
-        }
-        return -1;
-    }
-
-    private static void findIsland(int r, int c) {
-        if (arr[r][c] == 1) {
-            arr[r][c] = -i_cnt;
-            for (int[] d : dr) {
-                if (r + d[0] < 0 || r + d[0] >= N || c + d[1] < 0 || c + d[1] >= N) {
-                    continue;
-                }
-                if (arr[r + d[0]][c + d[1]] == 1) {
-                    findIsland(r + d[0], c + d[1]);
+            for (int[] dir : dirs) {
+                int nextR = now.r + dir[0];
+                int nextC = now.c + dir[1];
+                if (nextR < 0 || nextC < 0 || nextR >= N || nextC >= N || visited[nextR][nextC]) continue;
+                if (map[nextR][nextC] == startLand) {   // 같은 섬
+                    visited[nextR][nextC] = true;
+                    que.add(new Node(nextR, nextC, 0));
+                } else if (map[nextR][nextC] < 0) {   // 다른 섬
+                    answer = Math.min(answer, now.count);
+                    return;
+                } else {//바다
+                    visited[nextR][nextC] = true;
+                    que.add(new Node(nextR, nextC, now.count + 1));
                 }
             }
         }
     }
 
-
+    private static void islandCheck(int r, int c, int islandNum) {
+        Deque<Node> que = new ArrayDeque<>();
+        que.add(new Node(r, c));
+        map[r][c] = islandNum;
+        while (!que.isEmpty()) {
+            Node now = que.poll();
+            for (int[] dir : dirs) {
+                int nextR = now.r + dir[0];
+                int nextC = now.c + dir[1];
+                if (nextR < 0 || nextC < 0 || nextR >= N || nextC >= N) continue;
+                if (map[nextR][nextC] > 0) {
+                    map[nextR][nextC] = islandNum;
+                    que.add(new Node(nextR, nextC));
+                }
+            }
+        }
+    }
 }
