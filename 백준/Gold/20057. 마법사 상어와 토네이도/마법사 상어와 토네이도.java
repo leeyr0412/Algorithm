@@ -1,175 +1,111 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.*;
 
-/**
- * 마법사상어와토네이도 / 골드3 / 걸린시간 / 3월 22일
- */
 public class Main {
-    static int answer = 0;
-    static int N = 0;
-    static int[][] dr = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+    static class Tornado {
+        int r, c, dir;
+        int moveLength; // 지금 방향으로 이동할 수 있는 거
+        int moveCount;  // 지금 방향으로 이동한 거리
+        int dirChangeCount; // 방향 바꾼 횟수
+
+        public Tornado(int startPos) {
+            this.r = startPos;
+            this.c = startPos;
+            this.dir = 0;
+            this.moveLength = 1;
+            this.moveCount = 0;
+            this.dirChangeCount = 0;
+        }
+
+        public void changeDir() {
+            this.dir = (this.dir + 1) % 4;
+            moveCount = 0;
+            dirChangeCount++;
+            if (dirChangeCount == 2) {  // 방향을 2번 바꿀때마다 이동 거리가 증가
+                moveLength++;
+                dirChangeCount = 0;
+            }
+        }
+
+        public void move() {
+            this.r += dirs[dir][0];
+            this.c += dirs[dir][1];
+            this.moveCount++;
+        }
+
+        public boolean alive() {
+            return this.r != 0 || this.c != 0;
+        }
+
+        public boolean isTurn() {   // 이동할 수 있는 거리만큼 이동하면 회전
+            return moveCount == moveLength;
+        }
+    }
+
+    static int[][] dirs = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+    static int[][][] SPREAD_PATTERN = { // 방향에 따른 모래 이동 좌표와 퍼센트 [r, c, 퍼센트]
+            {{0, -2, 5}, {-1, -1, 10}, {1, -1, 10}, {-1, 0, 7}, {1, 0, 7}, {-2, 0, 2}, {2, 0, 2}, {-1, 1, 1}, {1, 1, 1}},
+            {{2, 0, 5}, {1, -1, 10}, {1, 1, 10}, {0, -1, 7}, {0, 1, 7}, {0, -2, 2}, {0, 2, 2}, {-1, 1, 1}, {-1, -1, 1}},
+            {{0, 2, 5}, {-1, 1, 10}, {1, 1, 10}, {-1, 0, 7}, {1, 0, 7}, {-2, 0, 2}, {2, 0, 2}, {-1, -1, 1}, {1, -1, 1}},
+            {{-2, 0, 5}, {-1, -1, 10}, {-1, 1, 10}, {0, -1, 7}, {0, 1, 7}, {0, -2, 2}, {0, 2, 2}, {1, 1, 1}, {1, -1, 1}}
+    };
+    static int[][] map;
+    static int N, answer;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;// = new StringTokenizer(br.readLine());
-        StringBuffer sb = new StringBuffer();
+        StringTokenizer st;
 
-        // 맵 입력받음
         N = Integer.parseInt(br.readLine());
-        int[][] map = new int[N][N];
+        map = new int[N][N];
         for (int r = 0; r < N; r++) {
             st = new StringTokenizer(br.readLine());
             for (int c = 0; c < N; c++) {
                 map[r][c] = Integer.parseInt(st.nextToken());
             }
         }
+        Tornado tornado = new Tornado(N / 2);
 
-        //현재 좌표
-        int currR = N / 2;
-        int currC = currR;
-
-        int len = 1;
-
-        int d = 0;
-
-        //토네이도 이동
-        while (currR >= 0 && currC >= 0) {
-            for (int i = 0; i < len; i++) {
-                currR = currR + dr[d][0];
-                currC = currC + dr[d][1];
-
-                if(!scopeCheck(currR,currC)){
-                    break;
-                }
-                //모래있음
-                if (map[currR][currC] > 0) {
-                    //모래 퍼지기
-                    spreadingSand(currR, currC, d, map);
-                }
+        while (tornado.alive()) {
+            tornado.move();
+            sand(tornado.r, tornado.c, tornado.dir);
+            if (tornado.isTurn()) {
+                tornado.changeDir();
             }
-
-
-            if (d == 1) {
-                len++;
-            } else if (d == 3) {
-                len++;
-            }
-            d = (d + 1) % 4;
         }
         System.out.println(answer);
     }
 
-    private static void spreadingSand(int currR, int currC, int d, int[][] map) {
-        int newR, newC;
-        int a = map[currR][currC];
-        map[currR][currC] = 0;
-        int temp;   //임시 모래양
-        int tempA= a;
+    // 모래 날리기
+    private static void sand(int r, int c, int dir) {
+        int total = map[r][c];
+        int remain = total;
+        map[r][c] = 0;
 
-        //5%
-        newR = currR + dr[d][0] * 2;
-        newC = currC + dr[d][1] * 2;
-        temp = (int) (tempA * 0.05);
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += temp;
-        } else {
-            answer += temp;
+        for (int[] pattern : SPREAD_PATTERN[dir]) {
+            int nextR = r + pattern[0];
+            int nextC = c + pattern[1];
+            int sand = (total * pattern[2]) / 100;
+            if (isValid(nextR, nextC)) {
+                map[nextR][nextC] += sand;
+            } else {
+                answer += sand;
+            }
+            remain -= sand;
         }
-        a -= temp;
 
-        //10%
-        newR = currR + dr[d][0] + dr[(d + 1) % 4][0];
-        newC = currC + dr[d][1] + dr[(d + 1) % 4][1];
-        temp = (int) (tempA * 0.1);
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += temp;
+        int nextR = r + dirs[dir][0];
+        int nextC = c + dirs[dir][1];
+        if (isValid(nextR, nextC)) {
+            map[nextR][nextC] += remain;
         } else {
-            answer += temp;
-        }
-        a -= temp;
-        newR = currR + dr[d][0] + dr[(d != 0) ? d - 1 : 3][0];
-        newC = currC + dr[d][1] + dr[(d != 0) ? d - 1 : 3][1];
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += temp;
-        } else {
-            answer += temp;
-        }
-        a -= temp;
-
-        //7%
-        newR = currR + dr[(d + 1) % 4][0];
-        newC = currC + dr[(d + 1) % 4][1];
-        temp = (int) (tempA * 0.07);
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += temp;
-        } else {
-            answer += temp;
-        }
-        a -= temp;
-        newR = currR + dr[(d != 0) ? d - 1 : 3][0];
-        newC = currC + dr[(d != 0) ? d - 1 : 3][1];
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += temp;
-        } else {
-            answer += temp;
-        }
-        a -= temp;
-
-
-        //2%
-        newR = currR + dr[(d + 1) % 4][0]*2;
-        newC = currC + dr[(d + 1) % 4][1]*2;
-        temp = (int) (tempA * 0.02);
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += temp;
-        } else {
-            answer += temp;
-        }
-        a -= temp;
-        newR = currR + dr[(d != 0) ? d - 1 : 3][0]*2;
-        newC = currC + dr[(d != 0) ? d - 1 : 3][1]*2;
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += temp;
-        } else {
-            answer += temp;
-        }
-        a -= temp;
-
-
-        newR = currR + dr[(d+2)%4][0] + dr[(d + 1) % 4][0];
-        newC = currC + dr[(d+2)%4][1] + dr[(d + 1) % 4][1];
-        temp = (int) (tempA * 0.01);
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += temp;
-        } else {
-            answer += temp;
-        }
-        a -= temp;
-        newR = currR + dr[(d+2)%4][0] + dr[(d != 0) ? d - 1 : 3][0];
-        newC = currC + dr[(d+2)%4][1] + dr[(d != 0) ? d - 1 : 3][1];
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += temp;
-        } else {
-            answer += temp;
-        }
-        a -= temp;
-
-        //a
-        newR = currR + dr[d][0] ;
-        newC = currC + dr[d][1] ;
-        if (scopeCheck(newR, newC)) {
-            map[newR][newC] += a;
-        } else {
-            answer += a;
+            answer += remain;
         }
     }
 
-    private static boolean scopeCheck(int newR, int newC) {
-        if (newR < N && newC < N && newR >= 0 && newC >= 0) {
-            return true;
-        }
-        return false;
+    private static boolean isValid(int nextR, int nextC) {
+        return !(nextR < 0 || nextC < 0 || nextR >= N || nextC >= N);
     }
 }
