@@ -1,163 +1,165 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-
-/**
- * 어른상어 / 골드2 / 2시간 반 / 4월 4일
- */
-class Smell {
-    int shark;
-    int smell;
-
-    public Smell(int shark, int smell) {
-        this.shark = shark;
-        this.smell = smell;
-    }
-
-    public int getShark() {
-        return shark;
-    }
-
-    public int getSmell() {
-        return smell;
-    }
-}
+import java.util.*;
 
 public class Main {
-    static int N;
-    static int smell;
+
+    static class Shark {
+        int r, c, num, nowDir;
+        boolean isAlive;
+        int[][] dirPriority;
+
+        public Shark(int r, int c, int num) {
+            this.r = r;
+            this.c = c;
+            this.num = num;
+            this.isAlive = true;
+            this.dirPriority = new int[4][4];
+        }
+
+        public void setNowDir(int nowDir) {
+            this.nowDir = nowDir;
+        }
+
+        public void setDirPriority(int dir, int[] priority) {
+            this.dirPriority[dir] = priority;
+        }
+    }
+
+    static int N, M, k;
+    static int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    static int SHARK_NUM = 0, SMELL_REMAIN = 1, SMELL_SHARK = 2;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
-        N = Integer.parseInt(st.nextToken());
-        int sharkNum = Integer.parseInt(st.nextToken());
-         smell = Integer.parseInt(st.nextToken());
-
-        Smell[][] map = new Smell[N + 1][N + 1];
-        int[][] sharks = new int[sharkNum + 1][3];       //상어 방향, 위치 저장 배열
-        for (int r = 1; r <= N; r++) {
-            st = new StringTokenizer(br.readLine());
-            for (int c = 1; c <= N; c++) {
-                int a = Integer.parseInt(st.nextToken());
-                if (a > 0) {
-                    sharks[a][1] = r;
-                    sharks[a][2] = c;
-                    map[r][c] = new Smell(a, smell);
-                }
-            }
-        }
-
-        boolean[] die = new boolean[sharkNum + 1];   //수조에 상어가 살아있는지 확인 배열
         st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= sharkNum; i++) {
-            sharks[i][0] = Integer.parseInt(st.nextToken()) - 1;
-        }
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        k = Integer.parseInt(st.nextToken());
+        int[][][] map = new int[N][N][3];   // [r][c][상어 번호, 냄새, 냄새 남긴 상어]
+        Shark[] sharks = new Shark[M + 1];
+        int sharkCount = M;
 
-        int[][][] sharkDr = new int[sharkNum + 1][4][4];    //상어 번호, 바라보는 방향, 이동방향우선순위
-        for (int num = 1; num <= sharkNum; num++) {
-            for (int d = 0; d < 4; d++) {
-                st = new StringTokenizer(br.readLine());
-                for (int dr = 0; dr < 4; dr++) {
-                    sharkDr[num][d][dr] = Integer.parseInt(st.nextToken()) - 1;
+        // 지도 입력
+        for (int r = 0; r < N; r++) {
+            st = new StringTokenizer(br.readLine());
+            for (int c = 0; c < N; c++) {
+                map[r][c][SHARK_NUM] = Integer.parseInt(st.nextToken());
+                if (map[r][c][SHARK_NUM] != 0) {    // 상어일 경우
+                    map[r][c][SMELL_REMAIN] = k;
+                    map[r][c][SMELL_SHARK] = map[r][c][SHARK_NUM];
+                    sharks[map[r][c][SHARK_NUM]] = new Shark(r, c, map[r][c][SHARK_NUM]);
                 }
             }
         }
-        int time = 0;
-        while (time <= 1000) {
-            if (countShark(die) == 1) { //상어가 1마리 남으면 종료
+
+        // 상어 방향
+        st = new StringTokenizer(br.readLine());
+        for (int i = 1; i <= M; i++) {
+            sharks[i].setNowDir(Integer.parseInt(st.nextToken()) - 1);
+        }
+
+        // 상어 이동 우선순위 입력
+        for (int shark = 1; shark <= M; shark++) {
+            for (int dir = 0; dir < 4; dir++) {
+                st = new StringTokenizer(br.readLine());
+                int[] priority = new int[4];
+                for (int i = 0; i < 4; i++) {
+                    priority[i] = Integer.parseInt(st.nextToken()) - 1;
+                }
+                sharks[shark].setDirPriority(dir, priority);
+            }
+        }
+
+        int answer = 0;
+        while (sharkCount != 1) {
+            answer++;
+            if (answer > 1000) {
+                answer = -1;
                 break;
             }
-            time++;
 
-            //상어 이동
-            moveShark(map, die, sharks, sharkDr, sharkNum);
-
-            //냄새 줄이기
-            smellMinus(map);
-        }
-        if (time > 1000)
-            time = -1;
-        System.out.println(time);
-    }
-
-    /**
-     * 상어 이동
-     * @param map
-     * @param die      수조에 있는 상어 표시
-     * @param sharks   방향, 위치
-     * @param sharkDr  상어 번호, 바라보는 방향, 이동방향우선순위
-     * @param sharkNum 전체 상어 수
-     */
-    private static void moveShark(Smell[][] map, boolean[] die, int[][] sharks, int[][][] sharkDr, int sharkNum) {
-        int[][] dr = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-        int[][] newMap = new int[N + 1][N + 1]; //상어 번호 넣기
-        for (int num = 1; num <= sharkNum; num++) {
-            if (die[num])
-                continue;
-            boolean find = false;
-            for (int d : sharkDr[num][sharks[num][0]]) {
-                int newR = sharks[num][1] + dr[d][0];
-                int newC = sharks[num][2] + dr[d][1];
-                if (newR > 0 && newR <= N && newC > 0 && newC <= N) {//범위 안
-                    if (newMap[newR][newC] > 0) {
-                        find = true;
-                        die[num] = true;
-                        break;
-                    }
-                    if (map[newR][newC] == null) {
-                        map[newR][newC] = new Smell(num, smell+1);
-                        newMap[newR][newC] = num;
-                        find = true;
-                        sharks[num][0] = d;
-                        sharks[num][1] = newR;
-                        sharks[num][2] = newC;
-                        break;
-                    }
+            // 상어 움직임
+            for (Shark shark : sharks) {    // 작은 번호의 상어만 남기기 위해 1번부터 이동
+                if (shark == null) {
+                    continue;
                 }
-            }
-            if(!find){
-                for (int d : sharkDr[num][sharks[num][0]]) {
-                    int newR = sharks[num][1] + dr[d][0];
-                    int newC = sharks[num][2] + dr[d][1];
-                    if (newR > 0 && newR <= N && newC > 0 && newC <= N) {
-                        if (map[newR][newC].getShark() == num) {
-                            map[newR][newC] = new Smell(num, smell+1);
-                            sharks[num][0] = d;
-                            sharks[num][1] = newR;
-                            sharks[num][2] = newC;
-                            break;
+                if (!shark.isAlive) {
+                    continue;
+                }
+                int[] dirPriority = shark.dirPriority[shark.nowDir];
+                boolean moveCheck = false;
+                for (int dir : dirPriority) {   // 인접한 칸에 빈 칸 있음
+                    int nextR = shark.r + dirs[dir][0];
+                    int nextC = shark.c + dirs[dir][1];
+                    if (isOutOfBounds(nextR, nextC)) {
+                        continue;
+                    }
+                    if (map[nextR][nextC][SMELL_REMAIN] == 0) {    // 냄새가 없음
+                        if (map[nextR][nextC][SHARK_NUM] != 0) { // 같은 턴에 앞번호 상어가 이동한 칸임
+                            shark.isAlive = false;
+                            sharkCount--;
+                            map[shark.r][shark.c][SHARK_NUM] = 0;
+                        } else {
+                            sharkMove(map, shark, dir, nextR, nextC);
                         }
+                        moveCheck = true;
+                        break;
+                    }
+                }
+                if (moveCheck) {
+                    continue;
+                }
+                // 인접한 칸에 빈칸 없었음 -> 내 냄새칸으로
+                for (int dir : dirPriority) {
+                    int nextR = shark.r + dirs[dir][0];
+                    int nextC = shark.c + dirs[dir][1];
+                    if (isOutOfBounds(nextR, nextC)) {
+                        continue;
+                    }
+                    if (map[nextR][nextC][SMELL_SHARK] == shark.num) {    // 본인 냄새가 있는 칸
+                        sharkMove(map, shark, dir, nextR, nextC);
+                        break;
+                    }
+
+                }
+            }
+            // 냄새 감소
+            fadeSmell(map);
+        }
+        System.out.println(answer);
+    }
+
+    private static boolean isOutOfBounds(int nextR, int nextC) {
+        return nextR < 0 || nextC < 0 || nextR >= N || nextC >= N;
+    }
+
+    private static void fadeSmell(int[][][] map) {
+        for (int r = 0; r < N; r++) {
+            for (int c = 0; c < N; c++) {
+                if (map[r][c][SHARK_NUM] != 0) {    // 지금 상어가 있는 칸임
+                    map[r][c][SMELL_REMAIN] = k;
+                } else if (map[r][c][SMELL_REMAIN] > 0) {
+                    map[r][c][SMELL_REMAIN]--;
+                    if (map[r][c][SMELL_REMAIN] == 0) {
+                        map[r][c][SMELL_SHARK] = 0;
                     }
                 }
             }
         }
     }
 
-    private static void smellMinus(Smell[][] map) {
-        for (int r = 1; r <= N; r++) {
-            for (int c = 1; c <= N; c++) {
-                if (map[r][c] != null) {
-                    int k = map[r][c].getSmell() - 1;
-                    if (k == 0) {
-                        map[r][c] = null;
-                    } else {
-                        map[r][c] = new Smell(map[r][c].getShark(), k);
-                    }
-                }
-            }
-        }
-    }
-
-    private static int countShark(boolean[] die) {
-        int cnt = 0;
-        for (int i = 1; i < die.length; i++) {
-            if (!die[i])
-                cnt++;
-        }
-        return cnt;
+    private static void sharkMove(int[][][] map, Shark shark, int dir, int nextR, int nextC) {
+        // 기존 위치 비우기
+        map[shark.r][shark.c][SHARK_NUM] = 0;
+        shark.r = nextR;
+        shark.c = nextC;
+        //새 위치에 상어번호 넣기
+        map[nextR][nextC][SHARK_NUM] = shark.num;
+        map[nextR][nextC][SMELL_SHARK] = shark.num;
+        shark.nowDir = dir;
     }
 }
