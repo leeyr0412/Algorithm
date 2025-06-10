@@ -94,7 +94,7 @@
 
 <p style="text-align: center;"><img alt="" src="" style="width: 901px; height: 358px;"></p>
 
-<p style="text-align: center;"><그림 3></p>
+<p style="text-align: center;"><그림 3></p> 
 
 <p><그림 2>는 모든 상어가 한 칸 이동하고 자신의 냄새를 뿌린 상태이고, <그림 3>은 <그림 2>의 상태에서 한 칸 더 이동한 것이다. (2, 4)에는 상어 2과 4가 같이 도달했기 때문에, 상어 4는 격자 밖으로 쫓겨났다.</p>
 
